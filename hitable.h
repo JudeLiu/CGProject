@@ -4,6 +4,8 @@
 #include "aabb.h"
 #include <float.h>
 
+#define M_PI       3.14159265358979323846
+
 class material;
 
 void get_sphere_uv(const vec3 &p, float &u, float &v)

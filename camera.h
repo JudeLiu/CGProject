@@ -4,6 +4,8 @@
 #define CAMERAV4
 
 #include "ray.h"
+extern std::uniform_real_distribution<float> rand_gen;
+extern std::default_random_engine e;
 
 #ifdef CAMERAV1
 class camera
@@ -93,7 +95,7 @@ vec3 random_in_unit_disk()
     vec3 p;
     do
     {
-        p = 2.0 * vec3(drand48(), drand48(), 0) - vec3(1, 1, 0);
+        p = 2.0 * vec3(rand_gen(e), rand_gen(e), 0) - vec3(1, 1, 0);
     } while (dot(p, p) >= 1.0);
 
     return p;

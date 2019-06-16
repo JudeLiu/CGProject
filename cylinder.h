@@ -21,34 +21,37 @@ public:
         mat_ptr = m;
     }
 
-    vec3 norm(const vec3 &p) const
-    {
-        if (std::abs(p.z() - height) < 1e-3)
-        {
-            // hit the top
-            return vec3(0, 0, 1);
-        }
-        if (std::abs(p.z() < 1e-3))
-        {
-            // hit the bottom
-            return vec3(0, 0, -1);
-        }
+    vec3 norm(const vec3 &p) const;
 
-        vec3 c(center);
-        c[1] = p[1];
-        return unit_vector(p - c);
-        // vec3 n = p - center;
-        // n[1] = 0;
-        // return unit_vector(n);
-    }
-
-    virtual bool bounding_box(float t0, float t1, aabb& box) const;
+    virtual bool bounding_box(float t0, float t1, aabb &box) const;
     virtual bool hit(const ray &r, float tmin, float tmax, hit_record &rec) const;
 };
 
-bool cylinder::bounding_box(float t0, float t1, aabb& box) const {
-    vec3 _min(center.x(), center.y()-radius, center.z());
-    vec3 _max(center.x(), center.y()+radius, center.z()+height);
+vec3 cylinder::norm(const vec3 &p) const
+{
+    if (std::abs(p.z() - height) < 1e-3)
+    {
+        // hit the top
+        return vec3(0, 1, 0);
+    }
+    if (std::abs(p.z() < 1e-3))
+    {
+        // hit the bottom
+        return vec3(0, -1, 0);
+    }
+
+    vec3 c(center);
+    c[1] = p[1];
+    return unit_vector(p - c);
+    // vec3 n = p - center;
+    // n[1] = 0;
+    // return unit_vector(n);
+}
+
+bool cylinder::bounding_box(float t0, float t1, aabb &box) const
+{
+    vec3 _min(center.x() - radius, center.y(), center.z() - radius);
+    vec3 _max(center.x() + radius, center.y() + height, center.z() + radius);
     box = aabb(_min, _max);
     return true;
 }
@@ -58,14 +61,10 @@ bool cylinder::hit(const ray &r, float tmin, float tmax, hit_record &rec) const
     // the coefficients are cancelled, in b, discriminant and equation of the root
 
     // virtual direction, set y=0
-    vec3 vd = r.direction();
-    vd[1] = 0;
-    vec3 vo = r.origin();
-    vo[1] = 0;
-    vec3 oc = vo - center;
-    float a = dot(vd, vd);
-    float b = dot(vd, oc);
-    float c = dot(oc, oc) - radius * radius;
+    float a = pow(r.direction().x(), 2) + pow(r.direction().z(), 2);
+    float b = r.direction().x() * (r.origin().x() - center.x()) +
+              r.direction().z() * (r.origin().z() - center.z());
+    float c = pow((r.origin().x() - center.x()), 2) + pow(r.origin().z() - center.z(), 2) - radius * radius;
     float discriminant = b * b - a * c;
 
     bool isHit = false;
@@ -89,7 +88,7 @@ bool cylinder::hit(const ray &r, float tmin, float tmax, hit_record &rec) const
             {
                 // hit the bottom
                 float th = t1 + (t2 - t1) * ((y1 - ymin) / (y1 - y2));
-                
+
                 if (!(tmin < th && th < tmax))
                     isHit = false;
                 else
@@ -123,7 +122,7 @@ bool cylinder::hit(const ray &r, float tmin, float tmax, hit_record &rec) const
                     isHit = false;
                 else
                 {
-                    // hit the cap
+                    // hit the top
                     t = th;
                     isHit = true;
                     // std::cerr << "top\n";
