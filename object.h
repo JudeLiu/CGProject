@@ -1,5 +1,5 @@
-#ifndef HITABLEH
-#define HITABLEH
+#ifndef OBJECTH
+#define OBJECTH
 
 #include "aabb.h"
 #include <float.h>
@@ -38,7 +38,7 @@ struct hit_record
     hit_record() { objT = Object; }
 };
 
-class hitable
+class object
 {
 public:
     // virtual vec3 norm(const vec3 &p) const;
@@ -46,9 +46,9 @@ public:
     virtual bool bounding_box(float t0, float t1, aabb& box) const = 0;
 };
 
-class flip_normals : public hitable {
+class flip_normals : public object {
     public:
-        flip_normals(hitable *p) : ptr(p) {}
+        flip_normals(object *p) : ptr(p) {}
         virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
             if (ptr->hit(r, t_min, t_max, rec)) {
                 rec.normal = -rec.normal;
@@ -60,16 +60,16 @@ class flip_normals : public hitable {
         virtual bool bounding_box(float t0, float t1, aabb& box) const {
             return ptr->bounding_box(t0, t1, box);
         }
-        hitable *ptr;
+        object *ptr;
 };
 
 
-class translate : public hitable {
+class translate : public object {
     public:
-        translate(hitable *p, const vec3& displacement) : ptr(p), offset(displacement) {}
+        translate(object *p, const vec3& displacement) : ptr(p), offset(displacement) {}
         virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const;
         virtual bool bounding_box(float t0, float t1, aabb& box) const;
-        hitable *ptr;
+        object *ptr;
         vec3 offset; 
 };
 
@@ -93,20 +93,20 @@ bool translate::bounding_box(float t0, float t1, aabb& box) const {
         return false;
 }
 
-class rotate_y : public hitable {
+class rotate_y : public object {
     public:
-        rotate_y(hitable *p, float angle);
+        rotate_y(object *p, float angle);
         virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const;
         virtual bool bounding_box(float t0, float t1, aabb& box) const {
             box = bbox; return hasbox;}
-        hitable *ptr;
+        object *ptr;
         float sin_theta;
         float cos_theta;
         bool hasbox;
         aabb bbox;
 };
 
-rotate_y::rotate_y(hitable *p, float angle) : ptr(p) {
+rotate_y::rotate_y(object *p, float angle) : ptr(p) {
     float radians = (M_PI / 180.) * angle;
     sin_theta = sin(radians);
     cos_theta = cos(radians);

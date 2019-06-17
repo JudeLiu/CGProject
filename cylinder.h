@@ -1,11 +1,11 @@
 #ifndef CYLINDERH
 #define CYLINDERH
 
-#include "hitable.h"
+#include "object.h"
 #include <cmath>
 
 // a simple cylinder perpendicular to xoz plane
-class cylinder : public hitable
+class cylinder : public object
 {
 public:
     vec3 center;

@@ -12,20 +12,20 @@
 #ifndef BVHH
 #define BVHH
 
-#include "hitable.h"
+#include "object.h"
 #include <random>
 
 extern std::uniform_real_distribution<float> rand_gen;
 extern std::default_random_engine e;
 
-class bvh_node : public hitable  {
+class bvh_node : public object  {
     public:
         bvh_node() {}
-        bvh_node(hitable **l, int n, float time0, float time1);
+        bvh_node(object **l, int n, float time0, float time1);
         virtual bool hit(const ray& r, float tmin, float tmax, hit_record& rec) const;
         virtual bool bounding_box(float t0, float t1, aabb& box) const;
-        hitable *left;
-        hitable *right;
+        object *left;
+        object *right;
         aabb box;
 };
 
@@ -64,8 +64,8 @@ bool bvh_node::hit(const ray& r, float t_min, float t_max, hit_record& rec) cons
 
 int box_x_compare (const void * a, const void * b) {
         aabb box_left, box_right;
-        hitable *ah = *(hitable**)a;
-        hitable *bh = *(hitable**)b;
+        object *ah = *(object**)a;
+        object *bh = *(object**)b;
         if(!ah->bounding_box(0,0, box_left) || !bh->bounding_box(0,0, box_right))
                         std::cerr << "no bounding box in bvh_node constructor\n";
         if ( box_left.min().x() - box_right.min().x() < 0.0  )
@@ -77,8 +77,8 @@ int box_x_compare (const void * a, const void * b) {
 int box_y_compare (const void * a, const void * b)
 {
         aabb box_left, box_right;
-        hitable *ah = *(hitable**)a;
-        hitable *bh = *(hitable**)b;
+        object *ah = *(object**)a;
+        object *bh = *(object**)b;
         if(!ah->bounding_box(0,0, box_left) || !bh->bounding_box(0,0, box_right))
                         std::cerr << "no bounding box in bvh_node constructor\n";
         if ( box_left.min().y() - box_right.min().y() < 0.0  )
@@ -90,8 +90,8 @@ int box_y_compare (const void * a, const void * b)
 int box_z_compare (const void * a, const void * b)
 {
         aabb box_left, box_right;
-        hitable *ah = *(hitable**)a;
-        hitable *bh = *(hitable**)b;
+        object *ah = *(object**)a;
+        object *bh = *(object**)b;
         if(!ah->bounding_box(0,0, box_left) || !bh->bounding_box(0,0, box_right))
                         std::cerr << "no bounding box in bvh_node constructor\n";
         if ( box_left.min().z() - box_right.min().z() < 0.0  )
@@ -101,14 +101,14 @@ int box_z_compare (const void * a, const void * b)
 }
 
 
-bvh_node::bvh_node(hitable **l, int n, float time0, float time1) {
+bvh_node::bvh_node(object **l, int n, float time0, float time1) {
     int axis = int(3*rand_gen(e));
     if (axis == 0)
-       qsort(l, n, sizeof(hitable *), box_x_compare);
+       qsort(l, n, sizeof(object *), box_x_compare);
     else if (axis == 1)
-       qsort(l, n, sizeof(hitable *), box_y_compare);
+       qsort(l, n, sizeof(object *), box_y_compare);
     else
-       qsort(l, n, sizeof(hitable *), box_z_compare);
+       qsort(l, n, sizeof(object *), box_z_compare);
     if (n == 1) {
         left = right = l[0];
     }

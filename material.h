@@ -1,7 +1,7 @@
 #ifndef MATERIALH
 #define MATERIALH
 
-#include "hitable.h"
+#include "object.h"
 #include "ray.h"
 #include "texture.h"
 

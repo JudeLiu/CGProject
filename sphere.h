@@ -1,9 +1,9 @@
 #ifndef SPHEREH
 #define SPHEREH
 
-#include "hitable.h"
+#include "object.h"
 
-class sphere : public hitable
+class sphere : public object
 {
 public:
     vec3 center;

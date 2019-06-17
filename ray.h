@@ -4,18 +4,17 @@
 
 class ray
 {
-public:
-    vec3 A, B;
+    vec3 _origin, _dir;
 
+public:
     ray() {}
-    ray(const vec3 &a, const vec3 &b)
+    ray(const vec3 &o, const vec3 &d) : _origin(o), _dir(d)
     {
-        A = a;
-        B = b;
     }
-    vec3 origin() const { return A; }
-    vec3 direction() const { return B; }
-    vec3 point_at_parameter(float t) const { return A + t * B; }
+
+    vec3 origin() const { return _origin; }
+    vec3 direction() const { return _dir; }
+    vec3 point_at_parameter(float t) const { return _origin + t * _dir; }
 };
 
 #endif

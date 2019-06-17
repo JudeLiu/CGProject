@@ -2,7 +2,7 @@
 #define HEADERSH
 
 #include "sphere.h"
-#include "hitable_list.h"
+#include "object_list.h"
 #include "camera.h"
 // #include "plane.h"
 #include "material.h"

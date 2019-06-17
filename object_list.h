@@ -1,16 +1,16 @@
-#ifndef HITABLELISTH
-#define HITABLELISTH
+#ifndef OBJECTLISTH
+#define OBJECTLISTH
 
-#include "hitable.h"
+#include "object.h"
 
-class hitable_list : public hitable
+class object_list : public object
 {
 public:
-    hitable **list;
+    object **list;
     int list_size;
 
-    hitable_list() {}
-    hitable_list(hitable **l, int n)
+    object_list() {}
+    object_list(object **l, int n)
     {
         list = l;
         list_size = n;
@@ -21,7 +21,7 @@ public:
     virtual bool bounding_box(float t0, float t1, aabb& box) const;
 };
 
-bool hitable_list::bounding_box(float t0, float t1, aabb& box) const {
+bool object_list::bounding_box(float t0, float t1, aabb& box) const {
     if (list_size < 1) return false;
     aabb temp_box;
     bool first_true = list[0]->bounding_box(t0, t1, temp_box);
@@ -39,7 +39,7 @@ bool hitable_list::bounding_box(float t0, float t1, aabb& box) const {
     return true;
 }
 
-bool hitable_list::hit(const ray &r, float t_min, float t_max, hit_record &rec) const
+bool object_list::hit(const ray &r, float t_min, float t_max, hit_record &rec) const
 {
     hit_record temp_rec;
     bool hit_anything = false;
