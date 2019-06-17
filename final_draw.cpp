@@ -18,7 +18,7 @@
 
 #include "headers.h"
 
-const int RT_DEPTH = 10;
+#define RT_DEPTH 10
 
 int cntPlane = 0, cntSphere = 0, cntObj = 0, cntCy = 0, cntRect = 0;
 
@@ -27,7 +27,7 @@ inline int clamp(int n, int minimal = 0, int maximal = 255)
     return std::min(std::max(n, minimal), maximal);
 }
 
-vec3 light_source_color(const ray &r, hitable *world, int depth)
+vec3 light_source_color(const ray &r, object *world, int depth)
 {
     hit_record rec;
     if (world->hit(r, 0.001, FLT_MAX, rec))
@@ -44,7 +44,7 @@ vec3 light_source_color(const ray &r, hitable *world, int depth)
         return vec3(0, 0, 0);
 }
 
-vec3 color(const ray &r, hitable *world, int depth)
+vec3 color(const ray &r, object *world, int depth)
 {
     hit_record rec;
     if (world->hit(r, 1e-3, FLT_MAX, rec))
@@ -109,9 +109,9 @@ vec3 color(const ray &r, hitable *world, int depth)
     }
 }
 
-hitable *light_scene()
+object *light_scene()
 {
-    hitable **list = new hitable *[10];
+    object **list = new object *[10];
     int n = 0;
     texture *checker = new checker_texture(new constant_texture(vec3(0.2, 0.3, 0.1)),
                                            new constant_texture(vec3(0.9, 0.9, 0.9)));
@@ -132,24 +132,24 @@ hitable *light_scene()
     list[n++] = new yz_rect(0, 2, -0.5, 0.5, -3, new diffuse_light(new constant_texture(vec3(4, 0, 0))));
     list[n++] = new yz_rect(0, 2, -0.5, 0.5, 3, new diffuse_light(new constant_texture(vec3(0, 4, 4))));
 
-    // hitable *world = new hitable_list(list,5);
-    return new hitable_list(list, n);
+    // object *world = new object_list(list,5);
+    return new object_list(list, n);
 }
 
-hitable *simple_light()
+object *simple_light()
 {
-    hitable **list = new hitable *[4];
+    object **list = new object *[4];
     list[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(new constant_texture(vec3(.1, .3, .6))));
     list[1] = new sphere(vec3(0, 2, 0), 2, new lambertian(new constant_texture(vec3(.8, .3, .1))));
     list[2] = new sphere(vec3(0, 7, 0), 2, new diffuse_light(new constant_texture(vec3(4, 4, 4))));
     // list[3] = new xy_rect(3, 5, 1, 3, -2, new diffuse_light(new constant_texture(vec3(4, 4, 4))));
     list[3] = new xy_rect(3, 0, 4, 4, 0, new diffuse_light(new constant_texture(vec3(4, 0, 0))));
-    return new hitable_list(list, 4);
+    return new object_list(list, 4);
 }
 
-hitable *sun_scene()
+object *sun_scene()
 {
-    hitable **list = new hitable *[10];
+    object **list = new object *[10];
     int n = 0;
     list[n++] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(new constant_texture(vec3(0.1, 0.8, 0.4))));
     list[n++] = new sphere(vec3(0, 0.5, -1), 0.5, new lambertian(new constant_texture(vec3(0.2, 0.3, 0.5))));
@@ -159,12 +159,12 @@ hitable *sun_scene()
     list[n++] = new cylinder(vec3(2, 0, 0), .4, 1, new metal(vec3(1, 0, 0), 0));
     list[n++] = new cylinder(vec3(-2, 0, -4), 0.2, 2, new lambertian(new constant_texture(vec3(.6, .4, .4))));
 
-    return new hitable_list(list, n);
+    return new object_list(list, n);
 }
 
-hitable *cornell_box()
+object *cornell_box()
 {
-    hitable **list = new hitable *[30];
+    object **list = new object *[30];
     int n = 0;
     int ld = 4; // light density
     vec3 cyan(64. / 255., 224. / 255., 208. / 255.);
@@ -204,12 +204,12 @@ hitable *cornell_box()
     // list[n++] = new box(vec3(250, 0, 0), vec3(350, 100, 100), light); //front light
     list[n++] = new sphere(vec3(450, 50, 50), 20, new diffuse_light(new constant_texture(vec3(10, 10, 10))));
 
-    return new hitable_list(list, n);
+    return new object_list(list, n);
 }
 
-hitable *cornell_glass_focus()
+object *cornell_glass_focus()
 {
-    hitable **list = new hitable *[30];
+    object **list = new object *[30];
     int n = 0;
     int ld = 4; // light intensity
     vec3 cyan(64. / 255., 224. / 255., 208. / 255.);
@@ -246,7 +246,7 @@ hitable *cornell_glass_focus()
 
     list[n++] = new cylinder(vec3(400, 0, 400), 100, 100, new lambertian(new constant_texture(some_yellow)));
 
-    return new hitable_list(list, n);
+    return new object_list(list, n);
 }
 
 camera cornel_camera(int nx, int ny)
@@ -294,7 +294,7 @@ std::random_device rd;
 std::default_random_engine e{rd()};
 std::uniform_real_distribution<float> rand_gen(0, 1);
 
-int main(int argc, char **argv[])
+int main(int argc, char *argv[])
 {
     std::clock_t start_t, end_t;
 
@@ -309,8 +309,8 @@ int main(int argc, char **argv[])
         << nx << " " << ny << "\n255\n";
     float R = cos(M_PI / 4);
 
-    hitable *world = cornell_box();
-    // hitable *world = sun_scene();
+    object *world = cornell_box();
+    // object *world = sun_scene();
 
     camera cam = cornel_camera(nx, ny);
     // camera cam = normal_camera(nx, ny);
@@ -318,9 +318,10 @@ int main(int argc, char **argv[])
     const float gamma = 1.0f / 2.f;
 
     start_t = std::clock();
-    std::cout << "Renderig starts, please wait" << std::endl;
+    std::cout << "Rendering starts, please wait" << std::endl;
     for (int j = ny - 1; j >= 0; j--)
     {
+        printProgress((ny - j) * 1.0 / ny);
         for (int i = 0; i < nx; i++)
         {
             vec3 col(0, 0, 0);
@@ -353,7 +354,6 @@ int main(int argc, char **argv[])
 
             out << ir << " " << ig << " " << ib << "\n";
         }
-        printProgress((ny - j) * 1.0 / ny);
         // if (j % 10 == 0)
         //     std::cout << j << std::endl;
     }
