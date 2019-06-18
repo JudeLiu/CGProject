@@ -202,9 +202,7 @@ object *cornell_box()
     // list[n++] = new sphere(vec3(400, 240, 240), 50, water);
 
     // list[n++] = new box(vec3(250, 0, 0), vec3(350, 100, 100), light); //front light
-    list[n++] = new sphere(vec3(450, 50, 50), 20, new diffuse_light(new constant_texture(vec3(10, 10, 0))));
-
-    list[n++] = new sphere(vec3(250, 60, 70), 60, glass);
+    list[n++] = new sphere(vec3(450, 50, 50), 20, new diffuse_light(new constant_texture(vec3(10, 10, 10))));
 
     return new object_list(list, n);
 }
@@ -302,7 +300,7 @@ int main(int argc, char *argv[])
 
     int nx = 640;
     int ny = 480;
-    int ns = 100;
+    int ns = 40;
     char name[1000];
     sprintf(name, "cornellbox_%dp_%d.ppm", ny, ns);
     std::ofstream out(name);

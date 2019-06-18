@@ -108,8 +108,7 @@ public:
         {
             outward_normal = -rec.normal;
             ni_over_nt = ref_idx;
-            // cosine = ref_idx * dot(r_in.direction(), rec.normal) / r_in.direction().length();
-            cosine = dot(r_in.direction(), rec.normal) / r_in.direction().length();
+            cosine = ref_idx * dot(r_in.direction(), rec.normal) / r_in.direction().length();
         }
         else
         {
